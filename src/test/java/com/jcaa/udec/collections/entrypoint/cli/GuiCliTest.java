@@ -3,6 +3,7 @@ package com.jcaa.udec.collections.entrypoint.cli;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.jcaa.udec.collections.domain.core.exception.UsuarioNoExisteException;
+import com.jcaa.udec.collections.entrypoint.controller.ClienteControlador;
 import com.jcaa.udec.collections.entrypoint.controller.UsuarioControlador;
 import com.jcaa.udec.collections.entrypoint.controller.dto.request.RegistrarUsuarioPeticion;
 import com.jcaa.udec.collections.entrypoint.controller.dto.response.ObtenerUsuarioResponse;
@@ -20,18 +21,19 @@ class GuiCliTest {
     private static final String PASSWORD = "ClaveSegura1!";
     private static final String NOMBRE = "Ana Perez";
     private static final String EMAIL = "ana_perez@example.com";
+    private static final ClienteControlador SIN_CONTROLADOR_CLIENTES = null;
 
     @Test
     void deberiaSolicitarOpcionHastaRecibirValorValido() {
         // Arrange
         UsuarioControladorStub controlador = new UsuarioControladorStub();
-        GuiCli guiCli = crearGuiCli(controlador, "texto", "5", "\uFEFF2");
+        GuiCli guiCli = crearGuiCli(controlador, "texto", "6", "\uFEFF2");
 
         // Act
         String salida = capturarSalida(() -> assertThat(guiCli.obtenerOpcionMenu()).isEqualTo(2));
 
         // Assert
-        assertThat(salida).contains("Opcion [texto] invalida", "Opcion [5] invalida");
+        assertThat(salida).contains("Opcion [texto] invalida", "Opcion [6] invalida");
     }
 
     @Test
@@ -49,7 +51,7 @@ class GuiCliTest {
                 NOMBRE,
                 "correo-invalido",
                 EMAIL,
-                "4");
+                "5");
 
         // Act
         String salida = capturarSalida(guiCli::ejecutarAccion);
@@ -76,7 +78,7 @@ class GuiCliTest {
     void deberiaMostrarUsuarioBuscado() {
         // Arrange
         UsuarioControladorStub controlador = new UsuarioControladorStub();
-        GuiCli guiCli = crearGuiCli(controlador, "2", ID, "4");
+        GuiCli guiCli = crearGuiCli(controlador, "2", ID, "5");
 
         // Act
         String salida = capturarSalida(guiCli::ejecutarAccion);
@@ -89,7 +91,7 @@ class GuiCliTest {
     void deberiaInformarCuandoNoHayUsuariosRegistrados() {
         // Arrange
         UsuarioControladorStub controlador = new UsuarioControladorStub();
-        GuiCli guiCli = crearGuiCli(controlador, "3", "4");
+        GuiCli guiCli = crearGuiCli(controlador, "3", "5");
 
         // Act
         String salida = capturarSalida(guiCli::ejecutarAccion);
@@ -103,7 +105,7 @@ class GuiCliTest {
         // Arrange
         UsuarioControladorStub controlador = new UsuarioControladorStub();
         controlador.registrar(new RegistrarUsuarioPeticion(ID, PASSWORD, NOMBRE, EMAIL));
-        GuiCli guiCli = crearGuiCli(controlador, "3", "4");
+        GuiCli guiCli = crearGuiCli(controlador, "3", "5");
 
         // Act
         String salida = capturarSalida(guiCli::ejecutarAccion);
@@ -117,7 +119,7 @@ class GuiCliTest {
         // Arrange
         UsuarioControladorStub controlador = new UsuarioControladorStub();
         controlador.reportarUsuarioInexistente();
-        GuiCli guiCli = crearGuiCli(controlador, "2", ID, "4");
+        GuiCli guiCli = crearGuiCli(controlador, "2", ID, "5");
 
         // Act
         String salida = capturarSalida(guiCli::ejecutarAccion);
@@ -126,9 +128,26 @@ class GuiCliTest {
         assertThat(salida).contains("ERROR: El usuario no existe.");
     }
 
+    @Test
+    void deberiaAbrirMenuDeClientesYVolverAlMenuPrincipal() {
+        // Arrange
+        UsuarioControladorStub controlador = new UsuarioControladorStub();
+        GuiCli guiCli = crearGuiCli(controlador, "4", "6", "5");
+
+        // Act
+        String salida = capturarSalida(guiCli::ejecutarAccion);
+
+        // Assert
+        assertThat(salida).contains(
+                "4 - Gestionar clientes (Agencia de castings)",
+                "** GESTION DE CLIENTES - AGENCIA DE CASTINGS **",
+                "6 - Volver al menu principal",
+                "Esperamos tu regreso. Bye, Bye");
+    }
+
     private static GuiCli crearGuiCli(UsuarioControlador controlador, String... entradas) {
         String contenido = String.join(System.lineSeparator(), entradas) + System.lineSeparator();
-        return new GuiCli(controlador, new Scanner(contenido));
+        return new GuiCli(controlador, SIN_CONTROLADOR_CLIENTES, new Scanner(contenido));
     }
 
     private static String capturarSalida(Runnable accion) {
