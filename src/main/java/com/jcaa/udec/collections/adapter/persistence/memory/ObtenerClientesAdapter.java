@@ -11,6 +11,11 @@ public class ObtenerClientesAdapter implements ObtenerClientesPort {
     private final List<Cliente> clientes = ClientesMemoria.obtenerClientes();
 
     @Override
+    public List<Cliente> obtenerTodos() {
+        return List.copyOf(clientes);
+    }
+
+    @Override
     public Cliente buscarPorCodigo(String codigo) {
         for (Cliente cliente : clientes) {
             if (Objects.equals(cliente.getCodigo(), codigo)) {
