@@ -1,5 +1,6 @@
 package com.jcaa.udec.collections.adapter.persistence.memory;
 
+import com.jcaa.udec.collections.domain.core.exception.ClienteNoExisteException;
 import com.jcaa.udec.collections.domain.core.model.Cliente;
 import com.jcaa.udec.collections.domain.port.out.EliminarClientePort;
 
@@ -11,6 +12,9 @@ public class EliminarClienteAdapter implements EliminarClientePort {
 
     @Override
     public void eliminar(String codigo) {
-        clientes.removeIf(cliente -> Objects.equals(cliente.getCodigo(), codigo));
+        boolean eliminado = clientes.removeIf(cliente -> Objects.equals(cliente.getCodigo(), codigo));
+        if (!eliminado) {
+            throw new ClienteNoExisteException();
+        }
     }
 }
