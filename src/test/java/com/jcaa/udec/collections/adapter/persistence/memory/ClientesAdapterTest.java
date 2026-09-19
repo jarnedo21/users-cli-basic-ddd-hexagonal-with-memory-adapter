@@ -117,6 +117,20 @@ class ClientesAdapterTest {
     }
 
     @Test
+    void deberiaReportarClienteInexistenteAlEliminar() {
+        // Arrange
+        Cliente clienteRegistrado = crearCliente();
+        guardarClienteAdapter.guardar(clienteRegistrado);
+
+        // Act
+        // Assert
+        assertThatThrownBy(() -> eliminarClienteAdapter.eliminar(CODIGO_INEXISTENTE))
+                .isInstanceOf(ClienteNoExisteException.class)
+                .hasMessage("El cliente no existe.");
+        assertThat(obtenerClientesAdapter.obtenerTodos()).containsExactly(clienteRegistrado);
+    }
+
+    @Test
     void deberiaReemplazarClienteAlActualizarSinDuplicarlo() {
         // Arrange
         Cliente clienteOriginal = crearCliente();
