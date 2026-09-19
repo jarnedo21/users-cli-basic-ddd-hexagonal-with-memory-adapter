@@ -12,9 +12,9 @@ public class ActualizarClienteAdapter implements ActualizarClientePort {
 
     @Override
     public void actualizar(Cliente cliente) {
-        for (Cliente clienteRegistrado : clientes) {
-            if (Objects.equals(clienteRegistrado.getCodigo(), cliente.getCodigo())) {
-                clientes.add(cliente);
+        for (int indice = 0; indice < clientes.size(); indice++) {
+            if (Objects.equals(clientes.get(indice).getCodigo(), cliente.getCodigo())) {
+                clientes.set(indice, cliente);
                 return;
             }
         }
