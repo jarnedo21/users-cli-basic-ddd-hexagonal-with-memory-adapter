@@ -17,6 +17,7 @@ class ClientesAdapterTest {
     private final GuardarClienteAdapter guardarClienteAdapter = new GuardarClienteAdapter();
     private final ObtenerClientesAdapter obtenerClientesAdapter = new ObtenerClientesAdapter();
     private final EliminarClienteAdapter eliminarClienteAdapter = new EliminarClienteAdapter();
+    private final ActualizarClienteAdapter actualizarClienteAdapter = new ActualizarClienteAdapter();
 
     @BeforeEach
     void limpiarClientes() {
@@ -113,6 +114,43 @@ class ClientesAdapterTest {
 
         // Assert
         assertThat(obtenerClientesAdapter.obtenerTodos()).containsExactly(clienteQueSeConserva);
+    }
+
+    @Test
+    void deberiaReemplazarClienteAlActualizarSinDuplicarlo() {
+        // Arrange
+        Cliente clienteOriginal = crearCliente();
+        Cliente otroCliente = crearCliente();
+        guardarClienteAdapter.guardar(clienteOriginal);
+        guardarClienteAdapter.guardar(otroCliente);
+        Cliente clienteActualizado = new Cliente(
+                clienteOriginal.getCodigo(),
+                "Cine Caribe Producciones",
+                "Avenida Pedro de Heredia 45",
+                "6056543210",
+                "Carlos Ruiz",
+                "PUBLICIDAD_CINE");
+
+        // Act
+        actualizarClienteAdapter.actualizar(clienteActualizado);
+
+        // Assert
+        assertThat(obtenerClientesAdapter.obtenerTodos())
+                .containsExactly(clienteActualizado, otroCliente);
+        assertThat(obtenerClientesAdapter.buscarPorCodigo(clienteOriginal.getCodigo()))
+                .isSameAs(clienteActualizado);
+    }
+
+    @Test
+    void deberiaReportarClienteInexistenteAlActualizar() {
+        // Arrange
+        Cliente clienteNoRegistrado = crearCliente();
+
+        // Act
+        // Assert
+        assertThatThrownBy(() -> actualizarClienteAdapter.actualizar(clienteNoRegistrado))
+                .isInstanceOf(ClienteNoExisteException.class)
+                .hasMessage("El cliente no existe.");
     }
 
     private static Cliente crearCliente() {
