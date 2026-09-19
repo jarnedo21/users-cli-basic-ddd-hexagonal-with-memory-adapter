@@ -22,6 +22,6 @@ public record ClienteResponse(
     @Override
     public String toString() {
         return FORMATO_DATOS.formatted(
-                codigo, nombre, telefono, direccion, personaContacto, tipoActividad);
+                codigo, nombre, direccion, telefono, personaContacto, tipoActividad);
     }
 }
