@@ -66,8 +66,8 @@ class ClienteControladorImplTest {
                 .contains(
                         "CODIGO: " + CODIGO,
                         "NOMBRE: " + NOMBRE,
-                        DIRECCION,
-                        TELEFONO,
+                        "DIRECCION: " + DIRECCION,
+                        "TELEFONO: " + TELEFONO,
                         "PERSONA DE CONTACTO: " + PERSONA_CONTACTO,
                         "TIPO DE ACTIVIDAD: Moda");
     }
