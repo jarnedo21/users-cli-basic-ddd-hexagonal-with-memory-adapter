@@ -16,6 +16,7 @@ class ClientesAdapterTest {
     private static final String CODIGO_INEXISTENTE = "NOEXISTE";
     private final GuardarClienteAdapter guardarClienteAdapter = new GuardarClienteAdapter();
     private final ObtenerClientesAdapter obtenerClientesAdapter = new ObtenerClientesAdapter();
+    private final EliminarClienteAdapter eliminarClienteAdapter = new EliminarClienteAdapter();
 
     @BeforeEach
     void limpiarClientes() {
@@ -97,6 +98,21 @@ class ClientesAdapterTest {
         // Assert
         assertThatThrownBy(() -> clientes.add(crearCliente()))
                 .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void deberiaEliminarClientePorCodigo() {
+        // Arrange
+        Cliente clienteAEliminar = crearCliente();
+        Cliente clienteQueSeConserva = crearCliente();
+        guardarClienteAdapter.guardar(clienteAEliminar);
+        guardarClienteAdapter.guardar(clienteQueSeConserva);
+
+        // Act
+        eliminarClienteAdapter.eliminar(clienteAEliminar.getCodigo());
+
+        // Assert
+        assertThat(obtenerClientesAdapter.obtenerTodos()).containsExactly(clienteQueSeConserva);
     }
 
     private static Cliente crearCliente() {
